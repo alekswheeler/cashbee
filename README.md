@@ -1,6 +1,6 @@
 # Cashbee App README
 
-- [ ] TODO Replace or update this README with instructions relevant to your application
+CasheBee é um aplicativo completo para gerenciamento financeiro pessoal, desenvolvido com Java + Spring Boot (backend) e Vaadin (frontend). 
 
 To start the application in development mode, import it into your IDE and run the `Application` class. 
 You can also start the application from the command line by running: 
