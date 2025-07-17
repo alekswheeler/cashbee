@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: cashbee-postgres
+    environment:
+      POSTGRES_DB: cashbee_db
+      POSTGRES_USER: cashbee_user
+      POSTGRES_PASSWORD: cashbee_password
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - cashbee-network
+    restart: unless-stopped
+
+  # Adminer - Database Management Tool
+  adminer:
+    image: adminer:latest
+    container_name: cashbee-adminer
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+      ADMINER_DESIGN: nette
+    ports:
+      - "8081:8080"
+    networks:
+      - cashbee-network
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  # Your Spring Boot Application
+  app:
+    build: .
+    container_name: cashbee-app
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/cashbee_db
+      SPRING_DATASOURCE_USERNAME: cashbee_user
+      SPRING_DATASOURCE_PASSWORD: cashbee_password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: true
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
+    ports:
+      - "8080:8080"
+    networks:
+      - cashbee-network
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  cashbee-network:
+    driver: bridge
